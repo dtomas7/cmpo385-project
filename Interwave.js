@@ -30,6 +30,7 @@ function draw() {
 function toggleWave(){
   for(let i = 0; i < waveArray.length; i++) {
     waveArray[i].trigger();
+    console.log(waveVisual.waveYValues);
   }
 }
 
