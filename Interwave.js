@@ -28,8 +28,38 @@ function draw() {
 }
 
 function toggleWave(){
-
   for(let i = 0; i < waveArray.length; i++) {
     waveArray[i].trigger();
+  }
+}
+
+  
+function keyTyped() {
+  
+  switch (key){
+    case  "a":
+      waveVisual.setWaveType("sine");
+      forLoopUtil((index) => waveArray[index].changeWaveForm("sine"));
+      break;
+
+    case  "s":
+      waveVisual.setWaveType("square");
+      forLoopUtil((index) => waveArray[index].changeWaveForm("square"));
+      break;
+    case  "d":
+      waveVisual.setWaveType("saw");
+      forLoopUtil((index) => waveArray[index].changeWaveForm("saw"));
+      break;
+    case  "f":
+      waveVisual.setWaveType("tri");
+      forLoopUtil((index) => waveArray[index].changeWaveForm("tri"));
+      break;
+    default:
+      console.log("Switch case keypress ");
+  }
+}
+function forLoopUtil(func){
+  for(let i = 0; i < waveArray.length; i++) {
+    func(i);
   }
 }

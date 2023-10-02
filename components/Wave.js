@@ -74,16 +74,34 @@ class Wave {
       this.osc.freq(this.freq);
     }
   
-    changeWaveForm(){
-      console.log("in change wvae");
-      if (this.waveType == "sine") {
-        this.waveType == "triangle"
-        this.osc.setType("triangle");
-      }
-      else {
-        this.waveType == "sine"
-        this.osc.setType("sine");
-      }
+    changeWaveForm(type){
+        this.waveType = type;
+    //   console.log("in change wvae");
+    //   if (this.waveType == "sine") {
+    //     this.waveType == "triangle"
+    //     this.osc.setType("triangle");
+    //   }
+    //   else {
+    //     this.waveType == "sine"
+    //     this.osc.setType("sine");
+    //   }
+
+      switch (this.waveType){
+        case  "sine":
+            this.osc.setType("sine");
+            break;
+        case  "square":
+            this.osc.setType("square");
+            break;
+        case  "tri":
+            this.osc.setType("triangle");
+            break;
+        case  "saw":
+            this.osc.setType("sawtooth");
+            break;
+        default:
+            console.log("You messed up switchcase wave");
+    }
     }
   }
   
