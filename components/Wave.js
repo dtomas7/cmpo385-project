@@ -16,7 +16,7 @@ class Wave {
       this.osc.amp(this.amp);
       this.osc.freq(this.freq);
       
-      this.osc.start();
+      //this.osc.start();
       //this.osc.disconnect();
     }
     add() {

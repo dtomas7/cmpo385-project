@@ -1,5 +1,5 @@
 let waveArray = []
-let waveVisual;
+let waveVisualArray = [];
 
 function setup() {
   let cnv = createCanvas(400,400);
@@ -9,7 +9,9 @@ function setup() {
     waveArray.push(tempWave);
     //visualArray.push(new Node(tempWave, posArray[i])); 
   }
-  waveVisual = new WaveVisual();
+
+  forLoopUtil(() => waveVisualArray.push(new WaveVisual()));
+  //waveVisual = new WaveVisual();
 
   
 
@@ -22,7 +24,8 @@ function setup() {
 
 function draw() {
   background(220);
-  waveVisual.display();
+  forLoopUtil((index) => waveVisualArray[index].display());
+  //waveVisual.display();
 
   
 }
@@ -39,20 +42,20 @@ function keyTyped() {
   
   switch (key){
     case  "a":
-      waveVisual.setWaveType("sine");
+      forLoopUtil((index) => waveVisualArray[index].setWaveType("sine"));
       forLoopUtil((index) => waveArray[index].changeWaveForm("sine"));
       break;
 
     case  "s":
-      waveVisual.setWaveType("square");
+      forLoopUtil((index) => waveVisualArray[index].setWaveType("square"));
       forLoopUtil((index) => waveArray[index].changeWaveForm("square"));
       break;
     case  "d":
-      waveVisual.setWaveType("saw");
+      forLoopUtil((index) => waveVisualArray[index].setWaveType("saw"));
       forLoopUtil((index) => waveArray[index].changeWaveForm("saw"));
       break;
     case  "f":
-      waveVisual.setWaveType("tri");
+      forLoopUtil((index) => waveVisualArray[index].setWaveType("tri"));
       forLoopUtil((index) => waveArray[index].changeWaveForm("tri"));
       break;
     default:

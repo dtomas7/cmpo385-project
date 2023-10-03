@@ -1,44 +1,55 @@
+let instances = 0;
 class WaveVisual {
     constructor() {
+        instances++;
+        this.xSize = 50;
+        this.ySize = 200;
+        this.xPos = (instances - 1) * this.xSize;
+        console.log(this.xPos)
+        this.yPos  = 0;//height - this.ySize;
+        
+
         this.angle = 0;
-        this.amplitude = 50;
-        this.frequency = 0.5;
+        this.amplitude = this.xSize / 2;
+        this.frequency = 1.5;
         //this.yOff = 0.0;
         this.angleAdd = this.frequency/20
         this.waveType = "sine"
-        this.waveYValues  = [];
+        this.waveAmpValues  = [];
         this.horizontalSpeed = 0;
+        
     }
 
 
     display () {
         // Increment the angle over time to make the sine wave move
-        this.angle += this.angleAdd;
-        this.angle += this.horizontalSpeed;
+        
 
         // Calculate the y-coordinate of the sine wave
         //let y = eval("this.get" + this.waveType + "Y()");
-        let y;
+        let amp;
         switch (this.waveType){
             case  "sine":
-                y = this.getSineY();
+                this.angle -= this.angleAdd;
+                this.angle += 0.05;
+                amp = this.getSineY();
                
                 break;
             case  "square":
-                y = this.getSquareY();
+                amp = this.getSquareY();
                 break;
             case  "tri":
-                y = this.getTriY();
+                amp = this.getTriY();
                 break;
             case  "saw":
-                y = this.getSawY();
+                amp = this.getSawY();
                 break;
             default:
                 console.log("You messed up switchcase visual");
         }
-        this.waveYValues.unshift(y);
-        if(this.waveYValues.length > width){
-            this.waveYValues.pop();
+        this.waveAmpValues.unshift(amp);
+        if(this.waveAmpValues.length > this.ySize){
+            this.waveAmpValues.pop();
         }
         
 
@@ -52,23 +63,42 @@ class WaveVisual {
         // let y4 = this.getTriY();
     
         // console.log(y3)
-        // Draw the sine wave
-        translate(0, height / 2);
+        // Draw the sine wave horizonatlly 
+    //     translate(0, height / 2);
+    //     noFill();
+    //     stroke(0);
+    //     beginShape();
+    //    //rect(0, 0, width, y);
+    //     for (let i = 0; i < this.waveAmpValues.length; i++) {
+    //         vertex(i, this.waveAmpValues[i]);
+    //     }
+    //     endShape();
+    //     stroke(255,0,0)
+    //     line(0,0,width,0)
+
+        
+        
+        stroke(0)
+        fill(150);
+        rect(0, this.yPos, this.xSize + 1, this.ySize);
+        this.angle += this.angleAdd;
+        this.angle += this.horizontalSpeed;
         noFill();
         stroke(0);
         beginShape();
+
+        translate(this.xSize/2, this.yPos/2);
        //rect(0, 0, width, y);
-        for (let i = 0; i < this.waveYValues.length; i++) {
-            // for (let j = 0; j < this.waveYValues[i]; j++) {
-                vertex(i, this.waveYValues[i]);
-                
-            //}
-           
+       //draw it vertically 
+        for (let i = 0; i < this.waveAmpValues.length; i++) {
+            vertex(this.waveAmpValues[i], this.ySize - i);
         }
         endShape();
-        stroke(255,0,0)
-        line(0,0,width,0)
-        //ver
+        stroke(255,0,0);
+        line(0, 0, 0, this.ySize);
+
+        translate(this.xSize/2 + 1, this.yPos/2);
+      
     }
 
     setWaveType(type){
