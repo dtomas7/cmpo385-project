@@ -1,17 +1,22 @@
 let waveArray = []
 let waveVisualArray = [];
+let octaveSplit = 24;
+let spectrum, fft;
 
 function setup() {
-  let cnv = createCanvas(400,400);
+  let cnv = createCanvas(800,600);
   cnv.mouseClicked(toggleWave);
   for (let i = 0; i < 5; i++) {
     let tempWave = new Wave((i+1) * 55);
     waveArray.push(tempWave);
-    //visualArray.push(new Node(tempWave, posArray[i])); 
+    
   }
 
   forLoopUtil(() => waveVisualArray.push(new WaveVisual()));
   //waveVisual = new WaveVisual();
+  fft = new p5.FFT(0.75, 1024 * 8); 
+  octaveBands = fft.getOctaveBands(octaveSplit);
+  bandsNumber = octaveBands.length;
 
   
 
@@ -27,13 +32,16 @@ function draw() {
   forLoopUtil((index) => waveVisualArray[index].display());
   //waveVisual.display();
 
+  spectrum = fft.analyze();
+  drawOctaveBand();
+
   
 }
 
 function toggleWave(){
   for(let i = 0; i < waveArray.length; i++) {
     waveArray[i].trigger();
-    console.log(waveVisual.waveYValues);
+    
   }
 }
 
@@ -65,5 +73,29 @@ function keyTyped() {
 function forLoopUtil(func){
   for(let i = 0; i < waveArray.length; i++) {
     func(i);
+  }
+}
+
+function drawOctaveBand(){
+  //get the octave bands of our spectrum - average all bins in a particular octave band
+  //and we store those averages in our groupedFrequencies array 
+  groupedFrequencies = fft.logAverages(octaveBands);
+  
+  forLoopUtil((a) => {
+    pop();
+    pop();
+  })
+  for(let i = 0; i < bandsNumber; i++){
+    stroke(255);
+    fill(255);
+    
+    //rectangle height represents the avg value of this frequency range
+    let h = map(groupedFrequencies[i], 0, 255, 0, height/4);
+    stroke(0,255,0);
+    rect((i*width/bandsNumber), height/2, 1, -h);
+    if (i % octaveSplit == 0){
+      stroke(255,0,0)
+      line(i*width/bandsNumber, 0, i*width/bandsNumber, height/2)
+    } 
   }
 }

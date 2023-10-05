@@ -2,11 +2,12 @@ let instances = 0;
 class WaveVisual {
     constructor() {
         instances++;
-        this.xSize = 50;
-        this.ySize = 200;
+        this.xSize = 100;
+        this.ySize = height * 3 /8;
         this.xPos = (instances - 1) * this.xSize;
         console.log(this.xPos)
-        this.yPos  = 0;//height - this.ySize;
+        this.yPos  = height - this.ySize;
+        this.padding = this.xSize / 10;
         
 
         this.angle = 0;
@@ -78,26 +79,28 @@ class WaveVisual {
 
         
         
-        stroke(0)
+        stroke(50)
         fill(150);
-        rect(0, this.yPos, this.xSize + 1, this.ySize);
+        rect(-1, this.yPos, this.xSize + 2, this.ySize);
         this.angle += this.angleAdd;
         this.angle += this.horizontalSpeed;
         noFill();
-        stroke(0);
+        stroke(0,0,255);
         beginShape();
 
-        translate(this.xSize/2, this.yPos/2);
+        push();
+        translate(this.xSize/2, 0);
        //rect(0, 0, width, y);
        //draw it vertically 
         for (let i = 0; i < this.waveAmpValues.length; i++) {
-            vertex(this.waveAmpValues[i], this.ySize - i);
+            vertex(this.waveAmpValues[i], this.yPos + this.ySize - i);
         }
         endShape();
         stroke(255,0,0);
-        line(0, 0, 0, this.ySize);
-
-        translate(this.xSize/2 + 1, this.yPos/2);
+        line(0, this.yPos, 0, this.ySize + this.yPos);
+        
+        push();
+        translate(this.xSize/2 + this.padding, 0);
       
     }
 
