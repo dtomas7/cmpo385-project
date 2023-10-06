@@ -1,7 +1,7 @@
 class Wave {
     constructor(freq) {
       console.log("in waveConstructor")
-      this.amplitude = 0.1; 
+      this.amplitude = 0.5; 
       this.freq = freq;
       this.waveType = "sine";
       this.modeFunc = this.sustainMode;
@@ -13,7 +13,7 @@ class Wave {
       this.env.setRange(this.amplitude, 0);
   
       this.osc = new p5.Oscillator(this.waveType);
-      this.osc.amp(this.amp);
+      this.osc.amp(this.amplitude);
       this.osc.freq(this.freq);
       
       //this.osc.start();
@@ -87,16 +87,17 @@ class Wave {
     //   }
 
       switch (this.waveType){
-        case  "sine":
+
+        case "sine":
             this.osc.setType("sine");
             break;
-        case  "square":
+        case "square":
             this.osc.setType("square");
             break;
-        case  "tri":
+        case "tri":
             this.osc.setType("triangle");
             break;
-        case  "saw":
+        case "saw":
             this.osc.setType("sawtooth");
             break;
         default:
