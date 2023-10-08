@@ -1,17 +1,58 @@
 let waveArray = []
 let waveVisualArray = [];
+let uiSet = [];
 let octaveSplit = 24;
 let spectrum, fft;
+//let waveSelected = 0;
+let maxWaves = 7;
+let waveSelect;
+let waveSelected = 0;
+let waveTypeSelect, typeLabel;
+
 
 function setup() {
   let cnv = createCanvas(800 * 2, 600 * 2);
   cnv.mouseClicked(toggleWave);
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < maxWaves; i++) {
     let tempWave = new Wave((i+1) * 55);
     waveArray.push(tempWave);
-    waveVisualArray.push(new WaveVisual(tempWave));
+    let tempWaveVisual =new WaveVisual(tempWave);
+    waveVisualArray.push(tempWaveVisual);
+    let slidePairAmp = new SlidePair(10, height + 10, "Amp slider:", waveArray[i]);
+    //SlidePairAmp.hide();
+    let slidePairFreq = new SlidePair(10, height + 60, "Freq slider:", waveArray[i]);
+    //SlidePairFreq.hide();
+    let waveTypeSelectPair = new SelectPair(350, height + 10, tempWave, tempWaveVisual); 
+    uiSet.push([slidePairAmp, slidePairFreq, waveTypeSelectPair]);
+
+
     
+
+    // waveTypeSelect = createSelect();
+    // waveTypeSelect.position(450 , height + 50);
+    // waveTypeSelect.selected("sine");
+    // waveTypeSelect.option("sine");
+    // waveTypeSelect.option("tri");
+    // waveTypeSelect.option("saw");
+    // waveTypeSelect.option("square");
+    // waveTypeSelect.changed(waveTypeSelectEvent);
+
   }
+
+  typeLabel = createSpan("Wave Selected:");
+  typeLabel.position(450, height + 10);
+
+  waveSelect = createSelect();
+  waveSelect.position(450, height + 40);
+  waveSelect.selected(0);
+  waveSelect.option(0);
+  waveSelect.option(1);
+  waveSelect.option(2);
+  waveSelect.option(3);
+  waveSelect.option(4);
+  waveSelect.option(5);
+  waveSelect.option(6);
+  waveSelect.changed(waveSelectEvent);
 
   //waveVisual = new WaveVisual();
   fft = new p5.FFT(0.75, 1024 * 8); 
@@ -25,14 +66,17 @@ function setup() {
   this.osc.freq(this.freq);
   
 
-  // let label = createSpan('Slider Label:');
-  // label.position(10, 10);
+  // let label = createSpan('Amplitude Slider');
+  // label.position( 10, height + 10);
   
   // // Create the slider
-  // slider = createSlider(0, 100, 50);
-  // slider.position(10, 60);
+  // slider = createSlider(0, 100, 50, 1);
+  // slider.position(10, height + 30);
+  // slider.style('width', '200px'); // Set the width of the slider
+  
+  
 
-  // // Associate the label with the slider using "for" and "id"
+  // Associate the label with the slider using "for" and "id"
   // label.attribute('for', 'slider');
   // slider.attribute('id', 'slider');
 
@@ -45,10 +89,24 @@ function draw() {
   spectrum = fft.analyze();
   drawOctaveBand();
 
-
+  forLoopUtil((index) => {
+    if (index != waveSelected){
+      uiSet[index][0].hide();
+      uiSet[index][1].hide();
+      uiSet[index][2].hide();
+    }
+  });
+  uiSet[waveSelected][0].show();
+  uiSet[waveSelected][1].show();
+  uiSet[waveSelected][2].show();
   
-  // let val = slider.value();
-  // text('Value: ' + val, 10, 70);
+  let ampVal = uiSet[waveSelected][0].slider.value();
+  waveArray[waveSelected].changeAmp(map(ampVal, 0, 100, 0, 1));
+
+  let freqVal = uiSet[waveSelected][1].slider.value();
+  waveArray[waveSelected].changeFreq(map(freqVal, 0, 100, 40, 5000));  // make this some how linear to pitch
+  //ive alrady done freq to cents, just need to proagbaly to cents to freq
+
 
   
   // let spectrum = fft.analyze();
@@ -64,13 +122,20 @@ function draw() {
 function toggleWave(){
   for(let i = 0; i < waveArray.length; i++) {
     waveArray[i].trigger();
-    
   }
+  // uiSet[0][0].hide();
+  // uiSet[0][1].hide();
+}
+
+function waveSelectEvent() {
+  waveSelected = waveSelect.value();
+  console.log(waveSelected);
 }
 
   
 function keyTyped() {
-  
+  // uiSet[0][0].show();
+  // uiSet[0][1].show();
   switch (key){
     case  "a":
       forLoopUtil((index) => waveVisualArray[index].setWaveType("sine"));

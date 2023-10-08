@@ -35,6 +35,7 @@ class WaveVisual {
             this.amplitude = this.findAmp();
         }
         // Increment the angle over time to make the sine wave move
+        this.frequency = this.findFreq();
         
 
         // Calculate the y-coordinate of the sine wave
@@ -128,13 +129,15 @@ class WaveVisual {
 
     findFreq() {
         let relativeFreq = this.wave.freq / 40;
-        console.log("rf = " + relativeFreq)
+        // console.log("rf = " + relativeFreq)
         let centDif =  1200 * (Math.log(relativeFreq)/ Math.log(2));
         //console.log(1200 * (log(this.wave.freq)/log(2)));
         //return 2;
-        console.log("cents did = " + centDif)
-        console.log("map gioves : "+ map(centDif, 0, 1200 * 7, 0.5, 8))
-        return map(centDif, 0, 1200 * 7, 0.5, 6);
+        // console.log("cents did = " + centDif)
+        // console.log("map gioves : "+ map(centDif, 0, 1200 * 7, 0.5, 8))
+        let returnFreq = map(centDif, 0, 1200 * 7, 0.5, 6);
+        this.angleAdd = returnFreq/20;
+        return returnFreq;
 
     }
 }

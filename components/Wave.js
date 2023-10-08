@@ -1,7 +1,7 @@
 class Wave {
     constructor(freq) {
       console.log("in waveConstructor")
-      this.amplitude = 0.5; 
+      this.amplitude = 0.1; 
       this.freq = freq;
       this.waveType = "sine";
       this.modeFunc = this.sustainMode;
