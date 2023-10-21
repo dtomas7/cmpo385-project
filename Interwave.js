@@ -100,11 +100,19 @@ function draw() {
   uiSet[waveSelected][1].show();
   uiSet[waveSelected][2].show();
   
-  let ampVal = uiSet[waveSelected][0].slider.value();
-  waveArray[waveSelected].changeAmp(map(ampVal, 0, 100, 0, 1));
 
-  let freqVal = uiSet[waveSelected][1].slider.value();
-  waveArray[waveSelected].changeFreq(map(freqVal, 0, 100, 40, 5000));  // make this some how linear to pitch
+  //changing the amplitdue stuff
+  
+  let ampVal = uiSet[waveSelected][0].slider.value();
+  waveArray[waveSelected].changeAmp(ampVal);
+  uiSet[waveSelected][0].setAmount(ampVal);
+
+
+  //changing the frequency
+  let centVal = uiSet[waveSelected][1].slider.value();
+  //waveArray[waveSelected].changeFreq(map(freqVal, 0, 100, 40, 5000));  // make this some how linear to pitch
+  uiSet[waveSelected][1].setAmount(centToFreq(centVal));
+  waveArray[waveSelected].changeFreq(centToFreq(centVal)); // using cents
   //ive alrady done freq to cents, just need to proagbaly to cents to freq
 
 
@@ -130,6 +138,12 @@ function toggleWave(){
 function waveSelectEvent() {
   waveSelected = waveSelect.value();
   console.log(waveSelected);
+}
+
+function centToFreq (cents) { //converts from cents to freq
+    let lowestFreq = 41.2;
+    let newFreq = lowestFreq * (Math.pow(2, cents/1200));
+    return newFreq;
 }
 
   
