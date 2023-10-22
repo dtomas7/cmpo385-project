@@ -90,15 +90,18 @@ function draw() {
   drawOctaveBand();
 
   forLoopUtil((index) => {
-    if (index != waveSelected){
-      uiSet[index][0].hide();
-      uiSet[index][1].hide();
-      uiSet[index][2].hide();
+    if (index != waveSelected){ // for every unselected wave
+      uiSet[index][0].hide(); //hide amp slider
+      uiSet[index][1].hide(); // hide freq slider
+      uiSet[index][2].hide(); // hide wave chooser
+
+      waveVisualArray[index].setSelected(false); // unselect wave visual
     }
   });
   uiSet[waveSelected][0].show();
   uiSet[waveSelected][1].show();
   uiSet[waveSelected][2].show();
+  waveVisualArray[waveSelected].setSelected(true); // select wave visual
   
 
   //changing the amplitdue stuff

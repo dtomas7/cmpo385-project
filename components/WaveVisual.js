@@ -22,6 +22,7 @@ class WaveVisual {
         this.waveType = "sine"
         this.waveAmpValues  = [];
         this.horizontalSpeed = 0;
+        this.selected  = false;
         
     }
 
@@ -68,9 +69,12 @@ class WaveVisual {
         this.angle += this.angleAdd;
         this.angle += this.horizontalSpeed;
         
+        let lineThickness = this.selected ? 4 : 1;
+        strokeWeight(lineThickness);
         stroke(50)
         fill(150);
         rect(-1, this.yPos, this.xSize + 2, this.ySize);
+        strokeWeight(1);
 
         
         push();
@@ -95,6 +99,11 @@ class WaveVisual {
         push();
         translate(this.xSize/2 + this.padding, 0);
       
+    }
+    
+    setSelected(bool) {
+        console.log("this is selected")
+        this.selected = bool;
     }
 
     setWaveType(type){
