@@ -44,14 +44,14 @@ function setup() {
 
   waveSelect = createSelect();
   waveSelect.position(450, height + 40);
-  waveSelect.selected(0);
-  waveSelect.option(0);
+  waveSelect.selected(1);
   waveSelect.option(1);
   waveSelect.option(2);
   waveSelect.option(3);
   waveSelect.option(4);
   waveSelect.option(5);
   waveSelect.option(6);
+  waveSelect.option(7);
   waveSelect.changed(waveSelectEvent);
 
   //waveVisual = new WaveVisual();
@@ -136,7 +136,7 @@ function toggleWave(){
 }
 
 function waveSelectEvent() {
-  waveSelected = waveSelect.value();
+  waveSelected = waveSelect.value() -1;
   console.log(waveSelected);
 }
 
