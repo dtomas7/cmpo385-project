@@ -127,15 +127,17 @@ class WaveVisual {
         return this.wave.sustaining ? map(this.wave.amplitude, 0, 1, 0, this.xSize / 2) : 0;;
     }
 
-    findFreq() {
-        let relativeFreq = this.wave.freq / 40;
+    findFreq() {//Tries to actually show  linear type of freq using cents
+        let lowestFreq = 41.2;
+        let relativeFreq = this.wave.freq / lowestFreq;
         // console.log("rf = " + relativeFreq)
-        let centDif =  1200 * (Math.log(relativeFreq)/ Math.log(2));
-        //console.log(1200 * (log(this.wave.freq)/log(2)));
+        let centDif =  1200 * (Math.log2(relativeFreq));
+        
+        //console.log(centDif);
         //return 2;
         // console.log("cents did = " + centDif)
         // console.log("map gioves : "+ map(centDif, 0, 1200 * 7, 0.5, 8))
-        let returnFreq = map(centDif, 0, 1200 * 7, 0.5, 6);
+        let returnFreq = map(centDif, 0, 1200*7, 0.2, 20);
         this.angleAdd = returnFreq/20;
         return returnFreq;
 
