@@ -12,9 +12,9 @@ let waveAmount = 1;
 let addBut, minusBut;
 let globalSustaining;
 let lpf, hpf;
-let lpfSlider, hpfSlider;
+let lpfSlider, hpfSlider, lResSlider, hResSlider;
 let lpfCheckbox, hpfCheckbox;
-
+let hResLabel, lResLabel;
 
 
 function setup() {
@@ -88,16 +88,26 @@ function setup() {
   lpf.freq(20000);
   hpf.freq(0);
 
-  //buttons to enable lpf and hpf
-
-
+  //lpf and hpf UI
   lpfSlider = createSlider(50,1000,500);
   lpfSlider.position(830, height + 25);
   lpfSlider.style('width', '200px');
+
+  lResLabel = createSpan("Resonance");
+  lResLabel.position(1050, height + 25);
+  lResSlider = createSlider(0, 25, 0);
+  lResSlider.position(1130, height + 25);
+
+
   
   hpfSlider = createSlider(500,15000,500);
   hpfSlider.position(830, height + 75);
   hpfSlider.style('width', '200px');
+  
+  hResLabel = createSpan("Resonance");
+  hResLabel.position(1050, height + 75);
+  hResSlider = createSlider(0, 25, 0);
+  hResSlider.position(1130, height + 75);
 
 
   lpfCheckbox = createCheckbox('Low Pass Filter', false);
@@ -161,14 +171,14 @@ function draw() {
   //changing the filter vals
   if (lpfCheckbox.checked()) {
     lpf.freq(lpfSlider.value());
+    lpf.res(lResSlider.value())
   }
 
   if (hpfCheckbox.checked()) {
     hpf.freq(hpfSlider.value());
+    hpf.res(hResSlider.value())
   }
   
-  
-
   //changing the amplitdue stuff
   
   let ampVal = uiSet[waveSelected][0].slider.value();
