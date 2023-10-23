@@ -11,37 +11,33 @@ let waveTypeSelect, typeLabel, amountLabel;
 let waveAmount = 1;
 let addBut, minusBut;
 let globalSustaining;
-
+let lpf, hpf;
+let lpfSlider, hpfSlider, lResSlider, hResSlider;
+let lpfCheckbox, hpfCheckbox;
+let hResLabel, lResLabel;
 
 
 function setup() {
   let cnv = createCanvas(800 * 2, 1000);
   cnv.mouseClicked(toggleWave);
-  for (let i = 0; i < maxWaves; i++) {
+
+  lpf = new p5.LowPass();
+  hpf = new p5.HighPass();
+
+  for (let i = 0; i < maxWaves; i++) { //setting up all things relating to a specific wave
     let tempWave = new Wave((i+1) * 55);
     waveArray.push(tempWave);
     let tempWaveVisual =new WaveVisual(tempWave);
+
+
     waveVisualArray.push(tempWaveVisual);
     let slidePairAmp = new SlidePair(10, height + 10, "Amp slider:", waveArray[i]);
-    //SlidePairAmp.hide();
     let slidePairFreq = new SlidePair(10, height + 60, "Freq slider:", waveArray[i]);
-    //SlidePairFreq.hide();
     let waveTypeSelectPair = new SelectPair(350, height + 10, tempWave, tempWaveVisual); 
     uiSet.push([slidePairAmp, slidePairFreq, waveTypeSelectPair]);
-
-
-    
-
-    // waveTypeSelect = createSelect();
-    // waveTypeSelect.position(450 , height + 50);
-    // waveTypeSelect.selected("sine");
-    // waveTypeSelect.option("sine");
-    // waveTypeSelect.option("tri");
-    // waveTypeSelect.option("saw");
-    // waveTypeSelect.option("square");
-    // waveTypeSelect.changed(waveTypeSelectEvent);
-
   }
+
+  //creating for wave select
 
   typeLabel = createSpan("Wave Selected:");
   typeLabel.position(450, height + 10);
@@ -65,31 +61,73 @@ function setup() {
   waveSelect.changed(waveSelectEvent);
 
 
+  //For creating wave amount
+  globalSustaining = false;
   amountLabel = createSpan("Waves: 1");
   amountLabel.position(570, height + 10);
-
-
-  addBut = createButton('+');
-  addBut.position(600, height + 40);
-  addBut.mousePressed(addWave);
-
-
-  globalSustaining = false;
 
   minusBut = createButton(' - ');
   minusBut.position(575, height + 40);
   minusBut.mousePressed(minusWave);
 
-  //waveVisual = new WaveVisual();
+  addBut = createButton('+');
+  addBut.position(600, height + 40);
+  addBut.mousePressed(addWave);
+
+  //for the overall visualisation
   fft = new p5.FFT(0.75, 1024 * 8); 
   octaveBands = fft.getOctaveBands(octaveSplit);
   bandsNumber = octaveBands.length;
 
+  //for the filters. Instantiated above
+  //chain is osc -> hpf -> lpf
+
+  hpf.disconnect();
+  hpf.connect(lpf);
+
+  lpf.freq(20000);
+  hpf.freq(0);
+
+  //lpf and hpf UI
+  lpfSlider = createSlider(50,1000,500);
+  lpfSlider.position(830, height + 25);
+  lpfSlider.style('width', '200px');
+
+  lResLabel = createSpan("Resonance");
+  lResLabel.position(1050, height + 25);
+  lResSlider = createSlider(0, 25, 0);
+  lResSlider.position(1130, height + 25);
+
+
+  
+  hpfSlider = createSlider(500,15000,500);
+  hpfSlider.position(830, height + 75);
+  hpfSlider.style('width', '200px');
+  
+  hResLabel = createSpan("Resonance");
+  hResLabel.position(1050, height + 75);
+  hResSlider = createSlider(0, 25, 0);
+  hResSlider.position(1130, height + 75);
+
+
+  lpfCheckbox = createCheckbox('Low Pass Filter', false);
+  lpfCheckbox.changed(toggleLpf);
+  lpfCheckbox.position(700, height + 20);
+
+  hpfCheckbox = createCheckbox('High Pass Filter', false);
+  hpfCheckbox.changed(toggleHpf);
+  hpfCheckbox.position(700, height + 70);
   
 
-  this.osc = new p5.Oscillator("sine");
-  this.osc.amp();
-  this.osc.freq(this.freq);
+  forLoopUtil ((index) => {
+    waveArray[index].osc.disconnect();
+    waveArray[index].osc.connect(hpf);
+  });
+
+
+  // this.osc = new p5.Oscillator("sine");
+  // this.osc.amp();
+  // this.osc.freq(this.freq);
   
 
   // let label = createSpan('Amplitude Slider');
@@ -130,6 +168,17 @@ function draw() {
   waveVisualArray[waveSelected].setSelected(true); // select wave visual
   
 
+  //changing the filter vals
+  if (lpfCheckbox.checked()) {
+    lpf.freq(lpfSlider.value());
+    lpf.res(lResSlider.value())
+  }
+
+  if (hpfCheckbox.checked()) {
+    hpf.freq(hpfSlider.value());
+    hpf.res(hResSlider.value())
+  }
+  
   //changing the amplitdue stuff
   
   let ampVal = uiSet[waveSelected][0].slider.value();
@@ -163,6 +212,22 @@ function toggleWave(){
   globalSustaining = !globalSustaining;
   // uiSet[0][0].hide();
   // uiSet[0][1].hide();
+}
+
+function toggleLpf(){
+  if (lpfCheckbox.checked()) {
+    lpf.freq(lpfSlider.value());
+  } else {
+    lpf.freq(20000);
+  }
+}
+
+function toggleHpf(){
+  if (hpfCheckbox.checked()) {
+    hpf.freq(hpfSlider.value());
+  } else {
+    hpf.freq(0);
+  }
 }
 
 function waveSelectEvent() {
@@ -242,7 +307,7 @@ function keyTyped() {
   }
 }
 function forLoopUtil(func){
-  for(let i = 0; i < waveArray.length; i++) {
+  for(let i = 0; i < maxWaves; i++) {
     func(i);
   }
 }

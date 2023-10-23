@@ -14,7 +14,7 @@ class SlidePair {
         else{
             this.amount = this.freqToCent();
             this.slider = createSlider(0, 1200 * 7, this.amount,  100);
-            this.slider.style('width', '1000px'); // Set the width of the slider
+            this.slider.style('width', '650px'); // Set the width of the slider
         }
         
         this.label = createSpan(this.labelStr + " " + this.amount);
