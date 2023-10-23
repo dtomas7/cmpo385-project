@@ -7,11 +7,15 @@ let spectrum, fft;
 let maxWaves = 7;
 let waveSelect;
 let waveSelected = 0;
-let waveTypeSelect, typeLabel;
+let waveTypeSelect, typeLabel, amountLabel;
+let waveAmount = 1;
+let addBut, minusBut;
+let globalSustaining;
+
 
 
 function setup() {
-  let cnv = createCanvas(800 * 2, 600 * 2);
+  let cnv = createCanvas(800 * 2, 1000);
   cnv.mouseClicked(toggleWave);
   for (let i = 0; i < maxWaves; i++) {
     let tempWave = new Wave((i+1) * 55);
@@ -44,15 +48,37 @@ function setup() {
 
   waveSelect = createSelect();
   waveSelect.position(450, height + 40);
-  waveSelect.selected(1);
-  waveSelect.option(1);
-  waveSelect.option(2);
-  waveSelect.option(3);
-  waveSelect.option(4);
-  waveSelect.option(5);
-  waveSelect.option(6);
-  waveSelect.option(7);
+  waveSelect.selected("1");
+  waveSelect.option("1");
+  waveSelect.option("2");
+  waveSelect.option("3");
+  waveSelect.option("4");
+  waveSelect.option("5");
+  waveSelect.option("6");
+  waveSelect.option("7");
+  waveSelect.disable("2");
+  waveSelect.disable("3");
+  waveSelect.disable("4");
+  waveSelect.disable("5");
+  waveSelect.disable("6");
+  waveSelect.disable("7");
   waveSelect.changed(waveSelectEvent);
+
+
+  amountLabel = createSpan("Waves: 1");
+  amountLabel.position(570, height + 10);
+
+
+  addBut = createButton('+');
+  addBut.position(600, height + 40);
+  addBut.mousePressed(addWave);
+
+
+  globalSustaining = false;
+
+  minusBut = createButton(' - ');
+  minusBut.position(575, height + 40);
+  minusBut.mousePressed(minusWave);
 
   //waveVisual = new WaveVisual();
   fft = new p5.FFT(0.75, 1024 * 8); 
@@ -131,16 +157,56 @@ function draw() {
 }
 
 function toggleWave(){
-  for(let i = 0; i < waveArray.length; i++) {
+  for(let i = 0; i < waveAmount; i++) {
     waveArray[i].trigger();
   }
+  globalSustaining = !globalSustaining;
   // uiSet[0][0].hide();
   // uiSet[0][1].hide();
 }
 
 function waveSelectEvent() {
-  waveSelected = waveSelect.value() -1;
+  waveSelected = parseInt(waveSelect.value()) - 1;
   console.log(waveSelected);
+}
+
+function addWave() {
+  if (waveAmount < 7) {
+    
+    if (globalSustaining) {
+      waveArray[waveAmount].osc.start();
+      waveArray[waveAmount].sustaining = true;
+    }
+    
+    waveAmount++;
+    waveSelect.enable("" + waveAmount);
+    waveSelect.selected("" + waveAmount);
+    waveSelected = waveAmount - 1;
+    //waveVisualArray[waveSelected].setSelected(true); 
+    amountLabel.html("Waves: " + waveAmount);
+    
+  }
+  
+
+}
+
+function minusWave() {
+  if(waveAmount > 1) {
+    waveSelect.disable("" + waveAmount);
+    waveArray[waveAmount - 1].sustaining = false;
+    waveArray[waveAmount - 1].osc.stop();
+    
+    if (waveSelected == waveAmount - 1) { // if the current wave is being taken away
+      waveVisualArray[waveSelected - 1].setSelected(true); // select wave visual 
+      waveSelected--; 
+      waveSelect.selected("" + (waveAmount - 1) );
+    }
+    waveAmount--;
+    amountLabel.html("Waves: " + waveAmount);
+    
+    
+  }
+  
 }
 
 function centToFreq (cents) { //converts from cents to freq
