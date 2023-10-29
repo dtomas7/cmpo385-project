@@ -15,18 +15,12 @@ class Wave {
       this.osc = new p5.Oscillator(this.waveType);
       this.osc.amp(this.amplitude);
       this.osc.freq(this.freq);
-
-      //this.disconnect();
-
-      
-      //this.osc.start();
-      //this.osc.disconnect();
     }
-    // add() {
-    //   console.log("in add");
-    //   this.osc.connect();
-    //   console.log("in connect")
-    // }
+    add() {
+      console.log("in add");
+      this.osc.connect();
+      console.log("in connect")
+    }
     delete() {
       this.osc.disconnect();
       console.log("in disconnect")
