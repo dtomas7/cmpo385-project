@@ -15,6 +15,10 @@ let lpf, hpf;
 let lpfSlider, hpfSlider, lResSlider, hResSlider;
 let lpfCheckbox, hpfCheckbox;
 let hResLabel, lResLabel;
+let adsrLabel, adsrCheckbox;
+let a = {value:0.5},d = {value:1.0} ,s = {value:0.0}, r = {value:0.0};
+let labelA, labelD, labelS, lavelR;
+let inputA, inputD, inputS, inputR;
 
 
 function setup() {
@@ -98,8 +102,6 @@ function setup() {
   lResSlider = createSlider(0, 25, 0);
   lResSlider.position(1130, height + 25);
 
-
-  
   hpfSlider = createSlider(500,15000,500);
   hpfSlider.position(830, height + 75);
   hpfSlider.style('width', '200px');
@@ -124,32 +126,63 @@ function setup() {
     waveArray[index].osc.connect(hpf);
   });
 
+  //adsr ui
+  adsrCheckbox = createCheckbox('ADSR', false);
+  adsrCheckbox.changed(toggleADSR);
+  adsrCheckbox.position(1275, height + 20);
 
-  // this.osc = new p5.Oscillator("sine");
-  // this.osc.amp();
-  // this.osc.freq(this.freq);
-  
 
-  // let label = createSpan('Amplitude Slider');
-  // label.position( 10, height + 10);
+  labelA = createSpan('Attack: ');
+  labelA.style('display', 'block'); // Make it a block-level element
+  labelA.position(1350, height + 20);    // Set the width
   
-  // // Create the slider
-  // slider = createSlider(0, 100, 50, 1);
-  // slider.position(10, height + 30);
-  // slider.style('width', '200px'); // Set the width of the slider
-  
-  
+  inputA = createInput();
+  inputA.attribute('placeholder', 'broke');
+  inputA.position(1400, height + 20);
+  inputA.style('width', '40px');
+  inputA.input(() => validateInput(a, inputA));
 
-  // Associate the label with the slider using "for" and "id"
-  // label.attribute('for', 'slider');
-  // slider.attribute('id', 'slider');
+  labelD = createSpan('Decay: ');
+  labelD.style('display', 'block'); // Make it a block-level element
+  labelD.position(1450, height + 20);    // Set the width
+  
+  inputD = createInput();
+  inputD.attribute('placeholder', 'broke');
+  inputD.position(1500, height + 20);
+  inputD.style('width', '40px');
+  inputD.input(() => validateInput(d, inputD));
 
+  labelS = createSpan('Sustain: ');
+  labelS.style('display', 'block'); // Make it a block-level element
+  labelS.position(1350, height + 75);    // Set the width
+  
+  inputS = createInput();
+  inputS.attribute('placeholder', 'broke');
+  inputS.position(1400, height + 75);
+  inputS.style('width', '40px');
+  inputS.input(() => validateInput(s, inputS));
+
+  labelR = createSpan('Release:');
+  labelR.style('display', 'block'); // Make it a block-level element
+  labelR.position(1450, height + 75);    // Set the width
+  
+  inputR = createInput();
+  inputR.attribute('placeholder', 'broke');
+  inputR.position(1500, height + 75);
+  inputR.style('width', '40px');
+  inputR.input(() => validateInput(r, inputR));
+  
 }
 
 function draw() {
+  // console.log("a: "  + a);
+  // console.log("d: "  +d);
+  // console.log("s: "  + s);
+  // console.log("r: "  + r);
   background(220);
   forLoopUtil((index) => waveVisualArray[index].display());
 
+  //drawing the ftt
   spectrum = fft.analyze();
   drawOctaveBand();
 
@@ -162,6 +195,8 @@ function draw() {
       waveVisualArray[index].setSelected(false); // unselect wave visual
     }
   });
+
+  //show all elements for the selected wave
   uiSet[waveSelected][0].show();
   uiSet[waveSelected][1].show();
   uiSet[waveSelected][2].show();
@@ -193,27 +228,18 @@ function draw() {
   waveArray[waveSelected].changeFreq(centToFreq(centVal)); // using cents
   //ive alrady done freq to cents, just need to proagbaly to cents to freq
 
-
-  
-  // let spectrum = fft.analyze();
-  // noStroke();
-  // fill(255, 0, 255);
-  // for (let i = 0; i< spectrum.length; i++){
-  //   let x = map(i, 0, spectrum.length, 0, width);
-  //   let h = map(spectrum[i], 0, 255,0,  height/2);
-  //   rect(x, height, width / spectrum.length, -h )
-  // }
 }
 
 function toggleWave(){
   for(let i = 0; i < waveAmount; i++) {
     waveArray[i].trigger();
   }
-  globalSustaining = !globalSustaining;
-  // uiSet[0][0].hide();
-  // uiSet[0][1].hide();
+  if (!adsrCheckbox.checked()) {
+    globalSustaining = !globalSustaining;
+  }
 }
 
+//turning on/off lpf
 function toggleLpf(){
   if (lpfCheckbox.checked()) {
     lpf.freq(lpfSlider.value());
@@ -222,6 +248,7 @@ function toggleLpf(){
   }
 }
 
+//turning on/off hpf
 function toggleHpf(){
   if (hpfCheckbox.checked()) {
     hpf.freq(hpfSlider.value());
@@ -230,11 +257,25 @@ function toggleHpf(){
   }
 }
 
+//having everything play as adsr
+function toggleADSR(){
+  forLoopUtil((index) => waveArray[index].changeMode());
+  if (adsrCheckbox.checked()) {
+    globalSustaining = true;
+  }
+  else {
+    globalSustaining = false;
+  }
+}
+
+
+//Selects a different wave
 function waveSelectEvent() {
   waveSelected = parseInt(waveSelect.value()) - 1;
   console.log(waveSelected);
 }
 
+//adds a wave to work with
 function addWave() {
   if (waveAmount < 7) {
     
@@ -247,14 +288,13 @@ function addWave() {
     waveSelect.enable("" + waveAmount);
     waveSelect.selected("" + waveAmount);
     waveSelected = waveAmount - 1;
-    //waveVisualArray[waveSelected].setSelected(true); 
     amountLabel.html("Waves: " + waveAmount);
     
   }
   
 
 }
-
+//takes away a wave
 function minusWave() {
   if(waveAmount > 1) {
     waveSelect.disable("" + waveAmount);
@@ -274,38 +314,29 @@ function minusWave() {
   
 }
 
+function validateInput(adsrParam, inputField) {
+  let inputValue = inputField.value();
+  // Use parseFloat to attempt to parse the input value as a float
+  let floatValue = parseFloat(inputValue);
+  
+  if (isNaN(floatValue)) {
+    // If it's not a valid float, clear the input field
+    inputField.value('');
+  }
+  else{
+    adsrParam.value = inputValue;
+    console.log("a: "  + a.value);
+
+   // forLoopUtil((index) => waveArray[index].env.setADSR(a.value, d.value, s.value, r.value));
+  }
+}
+
 function centToFreq (cents) { //converts from cents to freq
     let lowestFreq = 41.2;
     let newFreq = lowestFreq * (Math.pow(2, cents/1200));
     return newFreq;
 }
 
-  
-function keyTyped() {
-  // uiSet[0][0].show();
-  // uiSet[0][1].show();
-  switch (key){
-    case  "a":
-      forLoopUtil((index) => waveVisualArray[index].setWaveType("sine"));
-      forLoopUtil((index) => waveArray[index].changeWaveForm("sine"));
-      break;
-
-    case  "s":
-      forLoopUtil((index) => waveVisualArray[index].setWaveType("square"));
-      forLoopUtil((index) => waveArray[index].changeWaveForm("square"));
-      break;
-    case  "d":
-      forLoopUtil((index) => waveVisualArray[index].setWaveType("saw"));
-      forLoopUtil((index) => waveArray[index].changeWaveForm("saw"));
-      break;
-    case  "f":
-      forLoopUtil((index) => waveVisualArray[index].setWaveType("tri"));
-      forLoopUtil((index) => waveArray[index].changeWaveForm("tri"));
-      break;
-    default:
-      console.log("Switch case keypress ");
-  }
-}
 function forLoopUtil(func){
   for(let i = 0; i < maxWaves; i++) {
     func(i);
@@ -335,3 +366,27 @@ function drawOctaveBand(){
     } 
   }
 }
+
+// function keyTyped() {
+//   switch (key){
+//     case  "a":
+//       forLoopUtil((index) => waveVisualArray[index].setWaveType("sine"));
+//       forLoopUtil((index) => waveArray[index].changeWaveForm("sine"));
+//       break;
+
+//     case  "s":
+//       forLoopUtil((index) => waveVisualArray[index].setWaveType("square"));
+//       forLoopUtil((index) => waveArray[index].changeWaveForm("square"));
+//       break;
+//     case  "d":
+//       forLoopUtil((index) => waveVisualArray[index].setWaveType("saw"));
+//       forLoopUtil((index) => waveArray[index].changeWaveForm("saw"));
+//       break;
+//     case  "f":
+//       forLoopUtil((index) => waveVisualArray[index].setWaveType("tri"));
+//       forLoopUtil((index) => waveArray[index].changeWaveForm("tri"));
+//       break;
+//     default:
+//       console.log("Switch case keypress ");
+//   }
+// }

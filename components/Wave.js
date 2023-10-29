@@ -8,7 +8,7 @@ class Wave {
       this.sustaining = false;
   
       this.env = new p5.Envelope();// AR Envelope
-      this.env.setADSR(0.5, 1.0, 0.1 , 0 ); //setting it up as adsr
+      this.env.setADSR(0.5, 1.0, 0 , 0 ); //setting it up as adsr
       this.env.setExp(true); //making all the differences exponential
       this.env.setRange(this.amplitude, 0);
   
